@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Свой Дискорд</title>
+<style>
+:root{--bg:#313338;--side:#2b2d31;--panel:#383a40;--fg:#f2f3f5;--mut:#a3a6ad;--acc:#5865f2;--line:#232428;--ok:#3ba55d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f2f3f5;--side:#e3e5e8;--panel:#fff;--fg:#1e1f22;--mut:#5c5e66;--line:#d4d6da;color-scheme:light}}
+:root[data-theme="light"]{--bg:#f2f3f5;--side:#e3e5e8;--panel:#fff;--fg:#1e1f22;--mut:#5c5e66;--line:#d4d6da;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
+button{font-family:inherit}
+#app{display:none;height:100%;position:relative}
+#side{width:260px;background:var(--side);display:flex;flex-direction:column;flex:none;z-index:20;transition:transform .2s}
+#side h2{margin:0;padding:16px;font-size:16px;border-bottom:1px solid var(--line)}
+#side h3{margin:14px 16px 4px;font-size:12px;color:var(--mut);text-transform:uppercase}
+#chs{padding:4px 8px}
+.ch{display:block;width:100%;text-align:left;background:none;border:0;color:var(--mut);font:500 16px system-ui,sans-serif;padding:10px 12px;border-radius:8px}
+.ch.on{background:var(--panel);color:var(--fg)}
+#usr{flex:1;overflow-y:auto;padding:4px 16px;font-size:15px}
+.u{padding:5px 0;display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.u.v .dot{background:var(--ok)}
+#ctl{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid var(--line)}
+#ctl button{border:0;border-radius:10px;padding:12px;font:700 15px system-ui,sans-serif;color:#fff;background:var(--ok)}
+#ctl button.off{background:#da373c}
+#ctl .l{background:var(--panel);color:var(--fg)}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700}
+#menu{background:none;border:0;color:var(--fg);font-size:22px;padding:2px 8px}
+#msgs{flex:1;overflow-y:auto;padding:10px 14px}
+.m{margin-top:10px}.m.g{margin-top:2px}
+.nm{font-weight:700;font-size:15px}
+.tm{font-size:12px;color:var(--mut);margin-left:6px;font-weight:400}
+.tx{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.35;font-size:15px}
+#st{color:var(--mut);text-align:center;padding:30px 10px}
+#bar{display:flex;gap:8px;padding:10px 12px}
+#in{flex:1;min-width:0;background:var(--panel);color:var(--fg);border:0;border-radius:10px;padding:12px;font:16px system-ui,sans-serif}
+#send{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:0 18px;font:700 15px system-ui,sans-serif}
+#scrim{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:15}
+#join{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;background:var(--bg);z-index:30}
+#join h1{margin:0 0 6px}
+#join input{width:100%;max-width:320px;background:var(--panel);color:var(--fg);border:0;border-radius:10px;padding:14px;font:16px system-ui,sans-serif}
+#join button{width:100%;max-width:320px;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:14px;font:700 17px system-ui,sans-serif}
+#join p{color:var(--mut);max-width:320px;text-align:center;margin:0;font-size:14px}
+@media (max-width:799px){#side{position:absolute;top:0;bottom:0;left:0;width:80%;transform:translateX(-100%)}#app.open #side{transform:none}#app.open #scrim{display:block}}
+@media (min-width:800px){#menu{display:none}}
+</style></head><body>
+<form id="join"><h1>Свой Дискорд</h1>
+<input id="nm" placeholder="Твой ник" maxlength="20" required>
+<input id="rm" placeholder="Код комнаты, например: моякомната" maxlength="30" required>
+<button type="submit">Войти</button>
+<p>Друг вводит тот же код (или открывает твою ссылку) и вы в одной комнате: чат и голосовой канал.</p></form>
+<div id="app">
+<div id="side"><h2 id="rt">Комната</h2><h3>Каналы</h3><div id="chs"></div><h3>Онлайн</h3><div id="usr"></div>
+<div id="ctl"><button id="vc" type="button">🎤 Войти в голосовой</button><button class="l" id="cp" type="button">Скопировать ссылку</button></div></div>
+<div id="scrim"></div>
+<div id="main"><div id="top"><button id="menu" aria-label="Меню">☰</button><span id="tt"># общий</span></div>
+<div id="msgs"><div id="st">Подключаюсь…</div></div>
+<form id="bar"><input id="in" placeholder="Написать сообщение" autocomplete="off" maxlength="1000"><button id="send" type="submit">Отправить</button></form></div>
+</div>
+<div id="aud" style="display:none"></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),app=$('app'),msgs=$('msgs');
+const CH=['общий','мемы','игры'];
+let peer,me,name,room,hid,cur='общий',conns={},names={},voice={},calls={},hist=[],stream=null;
+const fmt=t=>new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+function status(s){msgs.innerHTML='';const d=document.createElement('div');d.id='st';d.textContent=s;msgs.appendChild(d)}
+function drawChans(){const b=$('chs');b.innerHTML='';for(const n of CH){const x=document.createElement('button');x.className='ch'+(n==cur?' on':'');x.textContent='# '+n;x.onclick=()=>{cur=n;$('tt').textContent='# '+n;drawChans();render();app.classList.remove('open')};b.appendChild(x)}}
+function drawUsers(){const b=$('usr');b.innerHTML='';const all=[[me,name+' (ты)',!!stream],...Object.keys(conns).map(i=>[i,names[i]||'Гость',!!voice[i]])];
+for(const [,n,v] of all){const d=document.createElement('div');d.className='u'+(v?' v':'');const dot=document.createElement('span');dot.className='dot';const t=document.createElement('span');t.textContent=n+(v?' 🔊':'');d.append(dot,t);b.appendChild(d)}}
+function render(){const list=hist.filter(m=>m.c===cur),stick=msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight<80;msgs.innerHTML='';
+if(!list.length)status('Здесь пока пусто. Напиши первым!');
+let prev=null;for(const m of list){const g=prev&&prev.n===m.n&&m.t-prev.t<300000;prev=m;
+const r=document.createElement('div');r.className='m'+(g?' g':'');
+if(!g){const h=document.createElement('div'),a=document.createElement('span');a.className='nm';a.textContent=m.n;const t=document.createElement('span');t.className='tm';t.textContent=fmt(m.t);h.append(a,t);r.appendChild(h)}
+const x=document.createElement('div');x.className='tx';x.textContent=m.s;r.appendChild(x);msgs.appendChild(r)}
+if(stick||list.length<2)msgs.scrollTop=msgs.scrollHeight}
+function bcast(o){for(const i in conns)if(conns[i].open)conns[i].send(o)}
+function play(id,s){unplay(id);const a=document.createElement('audio');a.id='a'+id;a.autoplay=true;a.setAttribute('playsinline','');a.srcObject=s;$('aud').appendChild(a);a.play().catch(()=>{})}
+function unplay(id){const a=document.getElementById('a'+id);if(a)a.remove()}
+function callTo(id){if(!stream||calls[id])return;const c=peer.call(id,stream);calls[id]=c;c.on('close',()=>{delete calls[id]})}
+function setup(c){
+c.on('open',()=>{conns[c.peer]=c;c.send({k:'hi',n:name});if(hid===me){c.send({k:'peers',l:Object.keys(conns).filter(x=>x!==c.peer)});c.send({k:'hist',l:hist})}drawUsers()});
+c.on('data',d=>{
+if(d.k==='hi'){names[c.peer]=d.n;drawUsers();if(stream){callTo(c.peer);c.send({k:'v',on:true})}}
+else if(d.k==='peers'){for(const id of d.l)if(!conns[id]&&id!==me)setup(peer.connect(id,{reliable:true}))}
+else if(d.k==='hist'){const k=new Set(hist.map(m=>m.t+m.n+m.s));for(const m of d.l)if(!k.has(m.t+m.n+m.s))hist.push(m);hist.sort((a,b)=>a.t-b.t);render()}
+else if(d.k==='m'){hist.push(d.m);render()}
+else if(d.k==='v'){voice[c.peer]=d.on;drawUsers()}});
+c.on('close',()=>{delete conns[c.peer];delete names[c.peer];delete voice[c.peer];unplay(c.peer);delete calls[c.peer];drawUsers()});
+c.on('error',()=>{})}
+function mk(id){peer=id?new Peer(id):new Peer();
+peer.on('open',pid=>{me=pid;$('join').style.display='none';app.style.display='flex';drawChans();drawUsers();status('Ты в комнате. Напиши первым!');
+if(!id){const c=peer.connect(hid,{reliable:true});setup(c);setTimeout(()=>{if(!conns[hid])status('Не удалось найти комнату. Попроси друга зайти первым.')},8000)}});
+peer.on('connection',setup);
+peer.on('call',call=>{call.answer(stream||undefined);call.on('stream',s=>play(call.peer,s));call.on('close',()=>unplay(call.peer))});
+peer.on('error',e=>{if(e.type==='unavailable-id'&&id){mk(null)}else if(e.type==='peer-unavailable'){status('В этой комнате пока никого нет. Попроси друга зайти первым.')}else status('Ошибка соединения: '+e.type)})}
+$('join').onsubmit=e=>{e.preventDefault();name=$('nm').value.trim();room=$('rm').value.trim().toLowerCase().replace(/[^a-zа-яё0-9]/g,'');if(!name||!room)return;
+hid='mydisc-'+encodeURIComponent(room).replace(/%/g,'');$('rt').textContent='Комната: '+room;location.hash=room;mk(hid)};
+$('bar').onsubmit=e=>{e.preventDefault();const v=$('in').value.trim();if(!v)return;$('in').value='';const m={c:cur,n:name,s:v,t:Date.now()};hist.push(m);if(hist.length>400)hist.shift();bcast({k:'m',m});render()};
+$('vc').onclick=async()=>{const b=$('vc');
+if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;for(const i in calls)calls[i].close();calls={};bcast({k:'v',on:false});b.textContent='🎤 Войти в голосовой';b.classList.remove('off');drawUsers();return}
+try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(er){status('Нет доступа к микрофону. Разреши его в настройках браузера.');return}
+bcast({k:'v',on:true});for(const i in conns)callTo(i);b.textContent='🔇 Выйти из голосового';b.classList.add('off');drawUsers()};
+$('cp').onclick=async()=>{const u=location.href.split('#')[0]+'#'+room;try{await navigator.clipboard.writeText(u);$('cp').textContent='Скопировано ✓'}catch(e){$('cp').textContent=u}setTimeout(()=>$('cp').textContent='Скопировать ссылку',2500)};
+$('menu').onclick=()=>app.classList.add('open');$('scrim').onclick=()=>app.classList.remove('open');
+if(location.hash.length>1)$('rm').value=decodeURIComponent(location.hash.slice(1));
+</script></body></html>
